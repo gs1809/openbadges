@@ -218,13 +218,25 @@ exports.manage = function manage(request, response, next) {
     if (err) return next(err);
     prepareBadgeIndex(badges);
     modifyGroups(groups);
+    
+    if (['http', 'https'].indexOf(configuration.get('protocol'))) {
+      var shareWidgetLink = configuration.get('protocol') + '://' + 
+      configuration.get('hostname') +
+      "/widget/" + user.get('id') + ".js";
+    } else {
+      var shareWidgetLink = configuration.get('protocol') + '://' + 
+      configuration.get('hostname') + ":" +
+      configuration.get('port') + "/widget/" + user.get('id') + ".js";
+    }
+
     response.render('backpack.html', {
       error: error,
       success: success,
       badges: badges,
       csrfToken: request.session._csrf,
       groups: groups,
-      tooltips: typeof request.param('tooltips') !== 'undefined'
+      tooltips: typeof request.param('tooltips') !== 'undefined',
+      shareLink: shareWidgetLink
     });
   }
 
