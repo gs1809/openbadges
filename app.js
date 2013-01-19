@@ -31,7 +31,6 @@ env.express(app);
 // Middleware. Also see `middleware.js`
 // ------------------------------------
 app.use(express.static(path.join(__dirname, "static")));
-app.use(express.static(__dirname));
 app.use(express.static(path.join(configuration.get('var_dir'), "badges")));
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
