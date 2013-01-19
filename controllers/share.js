@@ -177,14 +177,12 @@ exports.embeddedUrl = function (req, resp) {
   var userId = req.params.userId;
   Badge.getAllPublicBadges(userId, function(badges) {
     var widgetcode = "document.write(\"<table><tr>";
-    
+    //console.log(badges);
     for (var i = 0; i < badges.length; ++i) {
-        var badgeName = badges[i].assertion.badge.name;
-        var imgUrl = badges[i].assertion.badge.image;
-	var critUrl = badges[i].assertion.badge.criteria;
-	var assertUrl = badges[i].hostedUrl;
+        var imgUrl = badges[i].imageUrl;
+        var portfolioUrl = badges[i].portfolioUrl;
 	widgetcode = widgetcode + "<td align='center'>";
-	widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a>";
+	widgetcode = widgetcode + "<a href='" + portfolioUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a>";
 	widgetcode = widgetcode + "</td>";
     }
     

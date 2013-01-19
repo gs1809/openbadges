@@ -3,6 +3,7 @@ var regex = require('../lib/regex');
 var crypto = require('crypto');
 var Utils = require('../lib/utils');
 var Base = require('./mysql-base');
+var Portfolio = require('./portfolio');
 var async = require('async');
 var _ = require('underscore');
 
@@ -132,14 +133,17 @@ Badge.finders = {
   }
 };
 
-function getBadgeInfo(badgeId, callback) {
+function getBadgeInfo(badgeIdUrl, callback) {
+  var badgeId = badgeIdUrl[1];
+  var portfolioUrl = badgeIdUrl[0];
   Badge.findById(badgeId, function (err, badge){
     var badgeInfo =  {
-      lastValidated: badge.get('validated_on'),
+      /*lastValidated: badge.get('validated_on'),
       assertionType: badge.get('type'),
       hostedUrl: badge.get('endpoint'),
-      assertion: badge.get('body'),
-      imageUrl: Utils.fullUrl(badge.get('image_path'))
+      assertion: badge.get('body'),*/
+      imageUrl: Utils.fullUrl(badge.get('image_path')),
+      portfolioUrl : portfolioUrl
     };
 
     callback(null, badgeInfo);
@@ -149,13 +153,18 @@ function getBadgeInfo(badgeId, callback) {
 Badge.getAllPublicBadges = function (userId, callback) {
   var Group = require('./group'); // need require here because of circular dependency 
   Group.find({user_id : userId, 'public' : 1}, function (err, groups) {
-      var groupsAgg = _.map(groups, function (group){
-      return group.get('badges');    
+    var groupsAgg = _.map(groups, function (group){
+      var portfolioUrl = Utils.fullUrl("/share/" + group.get('url'));
+      return _.map(group.get('badges'), function(badge){
+        return [portfolioUrl, badge];
+      });
     });
-
+    
     groupsAgg = _.reduce(groupsAgg, function(a, b){ return a.concat(b);}, []);
-    groupsAgg = _.unique(groupsAgg);
-    async.map(groupsAgg, getBadgeInfo, function (err, badgeInfos){callback(badgeInfos);});
+    groupsAgg = _.unique(groupsAgg, function (item) { return item[1];});
+    async.map(groupsAgg, getBadgeInfo, function (err, badgeInfoObj){
+      callback(badgeInfoObj);
+    });
   });
 };
 
