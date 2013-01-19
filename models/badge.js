@@ -1,11 +1,10 @@
 var mysql = require('../lib/mysql');
-var async = require('async');
-var _ = require('underscore');
 var regex = require('../lib/regex');
 var crypto = require('crypto');
+var Utils = require('../lib/utils');
 var Base = require('./mysql-base');
-var Group = require('./group');
-var Utils = require('../lib/utils.js');
+var async = require('async');
+var _ = require('underscore');
 
 function sha256(value) {
   var sum = crypto.createHash('sha256');
@@ -148,6 +147,7 @@ function getBadgeInfo(badgeId, callback) {
 }
 
 Badge.getAllPublicBadges = function (userId, callback) {
+  var Group = require('./group'); // need require here because of circular dependency 
   Group.find({user_id : userId, 'public' : 1}, function (err, groups) {
       var groupsAgg = _.map(groups, function (group){
       return group.get('badges');    

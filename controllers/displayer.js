@@ -4,7 +4,7 @@ var Badge = require('../models/badge.js');
 var User = require('../models/user.js');
 var conf = require('../lib/configuration');
 var logger = require('../lib/logging').logger;
-var Utils = require('../lib/utils.js');
+var Utils = require('../lib/utils');
 
 // Helpers
 // -------
