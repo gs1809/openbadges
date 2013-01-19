@@ -1,7 +1,11 @@
 var mysql = require('../lib/mysql');
+var async = require('async');
+var _ = require('underscore');
 var regex = require('../lib/regex');
 var crypto = require('crypto');
 var Base = require('./mysql-base');
+var Group = require('./group');
+var Utils = require('../lib/utils.js');
 
 function sha256(value) {
   var sum = crypto.createHash('sha256');
@@ -127,6 +131,32 @@ Badge.finders = {
     var query = "SELECT * FROM `badge` WHERE `user_id` = (SELECT `id` FROM `user` WHERE `email` = ?)";
     mysql.client.query(query, [value], callback);
   }
+};
+
+function getBadgeInfo(badgeId, callback) {
+  Badge.findById(badgeId, function (err, badge){
+    var badgeInfo =  {
+      lastValidated: badge.get('validated_on'),
+      assertionType: badge.get('type'),
+      hostedUrl: badge.get('endpoint'),
+      assertion: badge.get('body'),
+      imageUrl: Utils.fullUrl(badge.get('image_path'))
+    };
+
+    callback(null, badgeInfo);
+  });
+}
+
+Badge.getAllPublicBadges = function (userId, callback) {
+  Group.find({user_id : userId, 'public' : 1}, function (err, groups) {
+      var groupsAgg = _.map(groups, function (group){
+      return group.get('badges');    
+    });
+
+    groupsAgg = _.reduce(groupsAgg, function(a, b){ return a.concat(b);}, []);
+    groupsAgg = _.unique(groupsAgg);
+    async.map(groupsAgg, getBadgeInfo, function (err, badgeInfos){callback(badgeInfos);});
+  });
 };
 
 // Validate the structure and values of the body field, which contains the
