@@ -171,3 +171,25 @@ exports.createOrUpdate = function (request, response) {
     return response.redirect(request.url, '303');
   });
 };
+
+
+exports.embeddedUrl = function (req, resp) {
+  var userId = req.params.userId;
+  Badge.getAllPublicBadges(userId, function(badges) {
+    var widgetcode = "document.write(\"<table><tr>";
+    
+    for (var i = 0; i < badges.length; ++i) {
+        var badgeName = badges[i].assertion.badge.name;
+        var imgUrl = badges[i].assertion.badge.image;
+	var critUrl = badges[i].assertion.badge.criteria;
+	var assertUrl = badges[i].hostedUrl;
+	widgetcode = widgetcode + "<td align='center'>";
+	widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a>";
+	widgetcode = widgetcode + "</td>";
+    }
+    
+    widgetcode = widgetcode + "</tr></table>\")";    
+    resp.setHeader('Content-Type', 'application/javascript');
+    return resp.send(widgetcode, 200);
+  });
+}

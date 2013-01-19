@@ -31,6 +31,7 @@ env.express(app);
 // Middleware. Also see `middleware.js`
 // ------------------------------------
 app.use(express.static(path.join(__dirname, "static")));
+app.use(express.static(__dirname));
 app.use(express.static(path.join(configuration.get('var_dir'), "badges")));
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
@@ -118,6 +119,7 @@ app.post('/share/:groupUrl', share.createOrUpdate);
 app.put('/share/:groupUrl', share.createOrUpdate);
 app.get('/share/:groupUrl', share.show);
 
+app.get('/widget/:userId.js', share.embeddedUrl);
 if (!module.parent) {
   var start_server = function start_server(app) {
     var port = app.config.get('port');
