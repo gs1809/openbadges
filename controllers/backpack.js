@@ -11,6 +11,7 @@ var browserid = require('../lib/browserid');
 var awardBadge = require('../lib/award');
 var Badge = require('../models/badge');
 var Group = require('../models/group');
+var Utils = require('../lib/utils');
 
 /**
  * Render the login page.
@@ -215,19 +216,11 @@ exports.manage = function manage(request, response, next) {
   }
 
   function makeResponse(err, badges) {
+    var shareWidgetLink = Utils.fullUrl("/widget/" + user.get('id') + ".js");
+    
     if (err) return next(err);
     prepareBadgeIndex(badges);
     modifyGroups(groups);
-    
-    if (['http', 'https'].indexOf(configuration.get('protocol'))) {
-      var shareWidgetLink = configuration.get('protocol') + '://' + 
-      configuration.get('hostname') +
-      "/widget/" + user.get('id') + ".js";
-    } else {
-      var shareWidgetLink = configuration.get('protocol') + '://' + 
-      configuration.get('hostname') + ":" +
-      configuration.get('port') + "/widget/" + user.get('id') + ".js";
-    }
 
     response.render('backpack.html', {
       error: error,
