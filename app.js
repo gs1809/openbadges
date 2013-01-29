@@ -118,6 +118,7 @@ app.post('/share/:groupUrl', share.createOrUpdate);
 app.put('/share/:groupUrl', share.createOrUpdate);
 app.get('/share/:groupUrl', share.show);
 
+app.get('/widget/:userId.js', share.embeddedUrl);
 if (!module.parent) {
   var start_server = function start_server(app) {
     var port = app.config.get('port');
