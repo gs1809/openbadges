@@ -11,7 +11,7 @@ var browserid = require('../lib/browserid');
 var awardBadge = require('../lib/award');
 var Badge = require('../models/badge');
 var Group = require('../models/group');
-var Utils = require('../lib/utils');
+var utils = require('../lib/utils');
 
 /**
  * Render the login page.
@@ -216,7 +216,7 @@ exports.manage = function manage(request, response, next) {
   }
 
   function makeResponse(err, badges) {
-    var shareWidgetLink = Utils.fullUrl("/widget/" + user.get('id') + ".js");
+    var shareWidgetLink = utils.fullUrl("/widget/" + user.get('id') + ".js");
     
     if (err) return next(err);
     prepareBadgeIndex(badges);

@@ -6,6 +6,7 @@ var Portfolio = require('../models/portfolio');
 var Group = require('../models/group');
 var configuration = require('../lib/configuration');
 var logger = require('../lib/logging').logger;
+var util = require('util');
 
 exports.findGroupByUrl = function findGroupByUrl(req, res, next, url) {
   Group.findOne({url: url}, function (err, group) {
@@ -175,18 +176,21 @@ exports.createOrUpdate = function (request, response) {
 
 exports.embeddedUrl = function (req, resp) {
   var userId = req.params.userId;
-  Badge.getAllPublicBadges(userId, function(badges) {
+  Badge.getAllPublicBadges(userId, function(err, badges) {
+    if (err)
+      return response.send('Something went wrong', 404); //[TODO]
     var widgetcode = "document.write(\"<table><tr>";
-    //console.log(badges);
-    for (var i = 0; i < badges.length; ++i) {
-        var imgUrl = badges[i].imageUrl;
-        var portfolioUrl = badges[i].portfolioUrl;
-	widgetcode = widgetcode + "<td align='center'>";
-	widgetcode = widgetcode + "<a href='" + portfolioUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a>";
-	widgetcode = widgetcode + "</td>";
-    }
+    badges.forEach(function(badge) {
+        var imgUrl = badge.imageUrl;
+        var portfolioUrl = badge.portfolioUrl;
+        var format = '<td align="center">'
+                    + '<a href="%s">'
+                    + '<img src="%s" width="50" height="50" border="0"/>'
+                    + '</a></td>';
+        widgetcode += util.format(format, portfolioUrl, imgUrl);
+    });
     
-    widgetcode = widgetcode + "</tr></table>\")";    
+    widgetcode += '</tr></table>\")';    
     resp.setHeader('Content-Type', 'application/javascript');
     return resp.send(widgetcode, 200);
   });
