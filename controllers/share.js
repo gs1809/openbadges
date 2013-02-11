@@ -179,7 +179,7 @@ exports.embeddedUrl = function (req, resp) {
   Badge.getAllPublicBadges(userId, function(err, badges) {
     if (err)
       return response.send('Something went wrong', 404); //[TODO]
-    var widgetcode = "document.write(\"<table><tr>";
+    var widgetcode = 'document.write(\'<div style="overflow-x:scroll; width:200px"><table><tr>';
     badges.forEach(function(badge) {
         var imgUrl = badge.imageUrl;
         var portfolioUrl = badge.portfolioUrl;
@@ -190,7 +190,7 @@ exports.embeddedUrl = function (req, resp) {
         widgetcode += util.format(format, portfolioUrl, imgUrl);
     });
     
-    widgetcode += '</tr></table>\")';    
+    widgetcode += '</tr></table></div>\')';    
     resp.setHeader('Content-Type', 'application/javascript');
     return resp.send(widgetcode, 200);
   });

@@ -3,28 +3,60 @@ const test = require('tap').test;
 const testUtils = require('./');
 
 const Badge = require('../models/badge');
+const Group = require('../models/group');
 const User = require('../models/user');
 
 testUtils.prepareDatabase({
   '1-user': new User({
     email: 'brian@example.com'
   }),
-  '2-existing-badge': new Badge({
+  '2-user': new User({
+    email: 'gajan@example.com'
+  }),
+  '3-existing-badge': new Badge({
     user_id: 1,
     type: 'hosted',
     endpoint: 'endpoint',
     image_path: 'image_path',
     body: testUtils.makeAssertion({recipient: 'brian@example.org'})
+  }),
+  '4-existing-badge': new Badge({
+    user_id: 2,
+    type: 'hosted',
+    endpoint: 'endpoint',
+    image_path: 'image_path',
+    body: testUtils.makeAssertion({'badge.name': 'Badge One'})
+  }),
+  '5-public-group': new Group({
+    user_id: 2,
+    'public' : 1,
+    name: 'Test Group',
+    badges: [1, 2]
   })
+
 }, function (fixtures) {
 
   test('Badge.findOne', function (t) {
-    const expect = fixtures['2-existing-badge'];
+    const expect = fixtures['3-existing-badge'];
     Badge.findOne({user_id: 1}, function (err, badge) {
       t.notOk(err, 'should not have an error');
       t.same(badge.get('id'), expect.get('id'));
       t.end();
     })
+  });
+
+  test('Badge.getAllPublicBadges', function (t) {
+    const context = fixtures['5-public-group']
+    Badge.getAllPublicBadges(context.get('user_id'), function (err, badgeInfos){
+      t.notOk(err, 'should not have an error');
+      
+      var resultIds = _.pluck(badgeInfos, 'badge_id').sort();
+      var badges = context.get('badges');
+      var expectedIds = (typeof badges === "string" ? JSON.parse(badges) : badges).sort();
+      
+      t.ok(_.isEqual(expectedIds, resultIds), "diff in badge ids");
+      t.end()
+    });
   });
 
   test('Badge.validateBody', function (t) {
