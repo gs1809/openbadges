@@ -174,11 +174,11 @@ exports.createOrUpdate = function (request, response) {
 };
 
 
-exports.embeddedUrl = function (req, resp) {
+exports.embeddedUrl = function (req, res, next) {
   var userId = req.params.userId;
   Badge.getAllPublicBadges(userId, function(err, badges) {
     if (err)
-      return response.send('Something went wrong', 404); //[TODO]
+      return next(err);
     var widgetcode = 'document.write(\'<div style="overflow-x:scroll; width:200px"><table><tr>';
     badges.forEach(function(badge) {
         var imgUrl = badge.imageUrl;
@@ -191,7 +191,7 @@ exports.embeddedUrl = function (req, resp) {
     });
     
     widgetcode += '</tr></table></div>\')';    
-    resp.setHeader('Content-Type', 'application/javascript');
-    return resp.send(widgetcode, 200);
+    res.setHeader('Content-Type', 'application/javascript');
+    return res.send(widgetcode, 200);
   });
 }

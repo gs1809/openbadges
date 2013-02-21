@@ -54,7 +54,7 @@ testUtils.prepareDatabase({
       var badges = context.get('badges');
       var expectedIds = (typeof badges === "string" ? JSON.parse(badges) : badges).sort();
       
-      t.ok(_.isEqual(expectedIds, resultIds), "diff in badge ids");
+      t.same(resultIds, expectedIds, "diff in badge ids");
       t.end()
     });
   });
