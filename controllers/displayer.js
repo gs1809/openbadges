@@ -4,7 +4,7 @@ var Badge = require('../models/badge.js');
 var User = require('../models/user.js');
 var conf = require('../lib/configuration');
 var logger = require('../lib/logging').logger;
-var Utils = require('../lib/utils');
+var utils = require('../lib/utils');
 
 // Helpers
 // -------
@@ -226,7 +226,7 @@ exports.userGroupBadges = function userGroupBadges(req, res, next) {
         assertionType: badge.get('type'),
         hostedUrl: badge.get('endpoint'),
         assertion: badge.get('body'),
-        imageUrl: Utils.fullUrl(badge.get('image_path'))
+        imageUrl: utils.fullUrl(badge.get('image_path'))
       };
     });
     return formatResponse({
