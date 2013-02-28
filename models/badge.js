@@ -159,7 +159,7 @@ Badge.getAllPublicBadges = function (userId, callback) {
     });
     
     groupsAgg = _.reduce(groupsAgg, function(a, b){ return a.concat(b)}, []);
-    groupsAgg = _.unique(groupsAgg, function (item) { return item[1];});
+    groupsAgg = _.unique(groupsAgg,  function (item) { return item[1];});
     async.map(groupsAgg, getBadgeInfo, function (err, badgeInfoObj){
       callback(err, badgeInfoObj);
     });

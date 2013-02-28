@@ -32,6 +32,12 @@ testUtils.prepareDatabase({
     'public' : 1,
     name: 'Test Group',
     badges: [1, 2]
+  }),
+  '6-public-group': new Group({
+    user_id: 2,
+    'public' : 1,
+    name: 'Test Duplicate-BadgeIds-Group',
+    badges: [1, 2]
   })
 
 }, function (fixtures) {
@@ -53,7 +59,13 @@ testUtils.prepareDatabase({
       var resultIds = _.pluck(badgeInfos, 'badge_id').sort();
       var badges = context.get('badges');
       var expectedIds = (typeof badges === "string" ? JSON.parse(badges) : badges).sort();
-      
+     
+      var lastBadgeId = null;
+      resultIds.forEach(function (badgeId) {
+        t.notSame(lastBadgeId, badgeId, "should not have duplicate badge-ids");
+        lastBadgeId = badgeId;
+      });
+
       t.same(resultIds, expectedIds, "diff in badge ids");
       t.end()
     });
