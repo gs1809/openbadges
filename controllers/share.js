@@ -179,19 +179,12 @@ exports.embeddedUrl = function (req, res, next) {
   Badge.getAllPublicBadges(userId, function(err, badges) {
     if (err)
       return next(err);
-    var widgetcode = 'document.write(\'<div style="overflow-x:scroll; width:200px"><table><tr>';
-    badges.forEach(function(badge) {
-        var imgUrl = badge.imageUrl;
-        var portfolioUrl = badge.portfolioUrl;
-        var format = '<td align="center">'
-                    + '<a href="%s">'
-                    + '<img src="%s" width="50" height="50" border="0"/>'
-                    + '</a></td>';
-        widgetcode += util.format(format, portfolioUrl, imgUrl);
+    res.render('widget.html', { badges: badges }, function (err, code) {
+      if (err)
+        return next(err);
+
+      res.type('application/javascript'); 
+      return res.send(util.format("document.write('%s')", code.replace(/\n/g, '')), 200);
     });
-    
-    widgetcode += '</tr></table></div>\')';    
-    res.setHeader('Content-Type', 'application/javascript');
-    return res.send(widgetcode, 200);
   });
 }

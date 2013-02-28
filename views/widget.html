@@ -1,0 +1,13 @@
+<div style="overflow-x:scroll; width:200px">
+  <table>
+    <tr>
+      {% for badge in badges  %}
+        <td align="center">
+          <a href="{{badge.portfolioUrl}}">
+            <img src="{{badge.imageUrl}}" width="50" height="50" border="0"/>
+          </a>
+        </td>
+      {% endfor %}
+    </tr>
+  </table>
+</div>
