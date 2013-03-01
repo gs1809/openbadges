@@ -135,7 +135,8 @@
 <script type="text/javascript">
   // JavaScript for autoselecting urls
   $(document).on("focusin",".js-url-field", function(){
-    var e;return e=this,setTimeout(function(){return $(e).select()},0)
+    var inputText = this;
+    setTimeout(function(){return $(inputText).select()},0);
   });
 </script>
 {% endblock %}
